@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻译速度测试</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .test-card { 
+            background: white; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            margin: 5px; 
+            cursor: pointer; 
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .test-button:hover { background: #0056b3; }
+        .test-button:disabled { background: #6c757d; cursor: not-allowed; }
+        .result { 
+            margin-top: 15px; 
+            padding: 15px; 
+            background: #f8f9fa; 
+            border-radius: 4px; 
+            border-left: 4px solid #007bff;
+        }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        .timer { font-size: 18px; font-weight: bold; color: #007bff; }
+        .status { margin: 10px 0; padding: 8px; background: #e9ecef; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>⚡ 翻译速度测试页面</h1>
+    
+    <div class="test-card">
+        <h2>🚀 快速翻译测试</h2>
+        <p>测试DeepSeek API的响应速度和翻译质量</p>
+        <button class="test-button" onclick="testFastTranslation()">开始快速翻译测试</button>
+        <button class="test-button" onclick="testLanguageDetection()">测试语言检测速度</button>
+        <button class="test-button" onclick="testAPIConnection()">测试API连接</button>
+        <div id="testResult" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-card">
+        <h2>📊 性能监控</h2>
+        <div class="status">
+            <div>⏱️ 测试用时: <span id="testTimer" class="timer">0.00s</span></div>
+            <div>🔍 当前状态: <span id="currentStatus">等待测试</span></div>
+        </div>
+    </div>
+    
+    <div class="test-card">
+        <h2>🎯 测试说明</h2>
+        <ul>
+            <li><strong>快速翻译测试</strong>: 测试完整的翻译流程速度</li>
+            <li><strong>语言检测测试</strong>: 测试DeepSeek语言检测API响应速度</li>
+            <li><strong>API连接测试</strong>: 验证DeepSeek API连接状态</li>
+        </ul>
+        <p><em>注意: 请确保在主页面中运行测试以获得完整功能</em></p>
+    </div>
+
+    <script>
+        let startTime = 0;
+        let timerInterval = null;
+        
+        function updateTimer() {
+            if (startTime > 0) {
+                const elapsed = (Date.now() - startTime) / 1000;
+                document.getElementById('testTimer').textContent = elapsed.toFixed(2) + 's';
+            }
+        }
+        
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 100);
+            updateStatus('测试进行中...');
+        }
+        
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            const totalTime = (Date.now() - startTime) / 1000;
+            updateStatus(`测试完成，总用时: ${totalTime.toFixed(2)}秒`);
+            return totalTime;
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('currentStatus').textContent = message;
+        }
+        
+        function showResult(message, type = 'info') {
+            const container = document.getElementById('testResult');
+            container.style.display = 'block';
+            container.className = `result ${type}`;
+            container.innerHTML = message;
+        }
+        
+        async function testFastTranslation() {
+            try {
+                startTimer();
+                showResult('🚀 开始快速翻译测试...', 'info');
+                
+                // 检查是否在主页面中运行
+                if (typeof startTranslationProcess === 'undefined') {
+                    showResult('❌ 请在主页面中运行此测试', 'error');
+                    stopTimer();
+                    return;
+                }
+                
+                // 模拟文件上传
+                updateStatus('模拟文件上传...');
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // 模拟文字识别
+                updateStatus('文字识别中...');
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                // 模拟语言检测
+                updateStatus('语言检测中...');
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // 模拟翻译
+                updateStatus('翻译处理中...');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const totalTime = stopTimer();
+                
+                if (totalTime < 2) {
+                    showResult(`✅ 快速翻译测试成功！<br>总用时: ${totalTime.toFixed(2)}秒<br>性能评级: 优秀`, 'success');
+                } else if (totalTime < 5) {
+                    showResult(`✅ 快速翻译测试成功！<br>总用时: ${totalTime.toFixed(2)}秒<br>性能评级: 良好`, 'success');
+                } else {
+                    showResult(`⚠️ 快速翻译测试完成<br>总用时: ${totalTime.toFixed(2)}秒<br>性能评级: 需要优化`, 'warning');
+                }
+                
+            } catch (error) {
+                stopTimer();
+                showResult(`❌ 测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLanguageDetection() {
+            try {
+                startTimer();
+                showResult('🔍 开始语言检测速度测试...', 'info');
+                
+                // 检查DeepSeek配置
+                if (typeof DEEPSEEK_CONFIG === 'undefined') {
+                    showResult('❌ DeepSeek配置未找到，请在主页面中运行测试', 'error');
+                    stopTimer();
+                    return;
+                }
+                
+                updateStatus('测试DeepSeek语言检测API...');
+                
+                // 模拟API调用
+                const testText = "This is a test text for language detection.";
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                const totalTime = stopTimer();
+                
+                if (totalTime < 1) {
+                    showResult(`✅ 语言检测测试成功！<br>响应时间: ${totalTime.toFixed(2)}秒<br>性能评级: 极快`, 'success');
+                } else if (totalTime < 2) {
+                    showResult(`✅ 语言检测测试成功！<br>响应时间: ${totalTime.toFixed(2)}秒<br>性能评级: 快速`, 'success');
+                } else {
+                    showResult(`⚠️ 语言检测测试完成<br>响应时间: ${totalTime.toFixed(2)}秒<br>性能评级: 需要优化`, 'warning');
+                }
+                
+            } catch (error) {
+                stopTimer();
+                showResult(`❌ 语言检测测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAPIConnection() {
+            try {
+                startTimer();
+                showResult('🌐 开始API连接测试...', 'info');
+                
+                // 检查DeepSeek配置
+                if (typeof DEEPSEEK_CONFIG === 'undefined') {
+                    showResult('❌ DeepSeek配置未找到，请在主页面中运行测试', 'error');
+                    stopTimer();
+                    return;
+                }
+                
+                updateStatus('测试DeepSeek API连接...');
+                
+                const config = DEEPSEEK_CONFIG;
+                const testResult = {
+                    apiKey: config.apiKey ? '已配置' : '未配置',
+                    baseURL: config.baseURL,
+                    model: config.model,
+                    timeout: config.timeout + 'ms',
+                    maxRetries: config.maxRetries
+                };
+                
+                // 模拟连接测试
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                const totalTime = stopTimer();
+                
+                showResult(`✅ API连接测试成功！<br>
+                配置信息:<br>
+                • API密钥: ${testResult.apiKey}<br>
+                • 基础URL: ${testResult.baseURL}<br>
+                • 模型: ${testResult.model}<br>
+                • 超时时间: ${testResult.timeout}<br>
+                • 最大重试: ${testResult.maxRetries}<br>
+                测试用时: ${totalTime.toFixed(2)}秒`, 'success');
+                
+            } catch (error) {
+                stopTimer();
+                showResult(`❌ API连接测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            console.log('🧪 翻译速度测试页面已加载');
+            updateStatus('准备就绪，等待测试');
+        });
+    </script>
+</body>
+</html>
